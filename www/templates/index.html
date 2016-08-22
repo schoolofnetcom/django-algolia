@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .algolia-autocomplete {
+  width: 100%;
+}
+.algolia-autocomplete .aa-input, .algolia-autocomplete .aa-hint {
+  width: 100%;
+  min-height: 30px;
+  text-indent: 10px;
+}
+.algolia-autocomplete .aa-hint {
+  color: #999;
+}
+.algolia-autocomplete .aa-dropdown-menu {
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #999;
+  border-top: none;
+}
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion {
+  cursor: pointer;
+  padding: 5px 4px;
+}
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion.aa-cursor {
+  background-color: #B2D7FF;
+}
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion em {
+  font-weight: bold;
+  font-style: normal;
+}
+    </style>
+</head>
+<body>
+<h1>My Posts</h1>
+
+Search: <input type="text" id="search">
+
+{% for post in posts %}
+<h3>{{post.title}}</h3>
+<p>{{post.content}}</p>
+{%endfor%}
+
+<script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
+<script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.min.js"></script>
+
+<script>
+    var algolia = algoliasearch("K4YSRWSFLH","68877bc245eeeb932c675e1561c8b3e2");
+    var post_index = algolia.initIndex("blog_posts");
+
+    autocomplete("#search", {hint: false}, [
+    {
+        source: autocomplete.sources.hits(post_index, {hitsPerPage: 6}),
+        templates: {
+            suggestion: function(suggestion) {
+                return suggestion._highlightResult.title.value;
+            }
+        }
+    }
+    ]).on('autocomplete:selected', function(event, suggestion, dataset) {
+        console.log(suggestion.id);
+        window.location.href="/blog/show/"+suggestion.id;
+    });
+</script>
+
+</body>
+</html>
